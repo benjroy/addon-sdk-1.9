@@ -26,7 +26,7 @@
   <![endif]-->
 
   <link rel="shortcut icon" type="image/x-icon" href="static-files/media/favicon.png">
-  <title>clipboard - Add-on SDK Documentation</title>
+  <title>subprocess - Add-on SDK Documentation</title>
 </head>
 <body>
 
@@ -61,120 +61,102 @@
   <div id="main-content-column" class="column">
     <div id="toc"></div>
     <div id="main-content">
-<div id="clipboard_module_api_docs" class="module_api_docs">
-<h1>clipboard</h1>
-<div class="module_description"><!-- This Source Code Form is subject to the terms of the Mozilla Public
-   - License, v. 2.0. If a copy of the MPL was not distributed with this
-   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<div class="package-detail">
+<h1>subprocess</h1>
 
-<!-- contributed by Dietrich Ayala [dietrich@mozilla.com]  -->
+<table class="meta-table">
+<tbody>
+<tr>
+<td>
+<span class="meta-header">Author</span>
+</td>
 
-<p>The <code>clipboard</code> module allows callers to interact with the system clipboard,
-setting and retrieving its contents.</p>
-<p>You can optionally specify the type of the data to set and retrieve.
-The following types are supported:</p>
-<ul>
-<li><code>text</code> (plain text)</li>
-<li><code>html</code> (a string of HTML)</li>
-<li><code>image</code> (a base-64 encoded png)</li>
-</ul>
-<p>If no data type is provided, then the module will detect it for you.</p>
-<p>Currently <code>image</code>'s type doesn't support transparency on Windows.</p>
-<h2>Examples</h2>
-<p>Set and get the contents of the clipboard.</p>
-<pre><code>var clipboard = require("clipboard");
-clipboard.set("Lorem ipsum dolor sit amet");
-var contents = clipboard.get();
+<td>
+<span class="author">Alexandre Poirot</span>
+</td>
+</tr>
+
+<tr>
+<td>
+<span class="meta-header">Version</span>
+</td>
+
+<td>
+<span class="version">0.1.1</span>
+</td>
+</tr>
+
+<tr>
+<td>
+<span class="meta-header">License</span>
+</td>
+
+<td>
+<span class="license">MPL 1.1/GPL 2.0/LGPL 2.1</span>
+</td>
+</tr>
+
+<tr>
+<td>
+<span class="meta-header">Dependencies</span>
+</td>
+
+<td>
+<span class="dependencies">api-utils</span>
+</td>
+</tr>
+
+<tr>
+<td>
+<span class="meta-header">Modules</span>
+</td>
+
+<td>
+<span class="modules"></span>
+</td>
+</tr>
+</tbody>
+</table>
+
+<div class="docs">
+<p><h2>What's that?</h2>
+
+<p>Simply package enigmail hard work on providing IPC feature in mozilla platform.
+So we are able to launch child proccesses from javascript,
+and in our case, from addon-sdk libraries :)</p>
+<h2>Sample of code:</h2>
+
+<pre><code>const subprocess = require("subprocess");
+var p = subprocess.call({
+  command:     'echo',
+
+  // Print stdin and our env variable
+  arguments:   ['$@', '$ENV_TEST'],
+  environment: ['ENV_TEST=OK'],
+
+  stdin: subprocess.WritablePipe(function() {
+    this.write("stdin");
+    this.close();
+  }),
+  stdout: subprocess.ReadablePipe(function(data) {
+    // data should be equal to: "stdin OK"
+
+  }),
+  stderr: subprocess.ReadablePipe(function(data) {
+
+  }),
+  onFinished: subprocess.Terminate(function() {
+
+  }),
+  mergeStderr: false
+});
 </code></pre>
-<p>Set the clipboard contents to some HTML.</p>
-<pre><code>var clipboard = require("clipboard");
-clipboard.set("&lt;blink&gt;Lorem ipsum dolor sit amet&lt;/blink&gt;", "html");
-</code></pre>
-<p>If the clipboard contains HTML content, open it in a new tab.</p>
-<pre><code>var clipboard = require("clipboard");
-if (clipboard.currentFlavors.indexOf("html") != -1)
-  require("tabs").open("data:text/html," + clipboard.get("html"));
-</code></pre>
-<p>Set the clipboard contents to an image.</p>
-<pre><code>var clipboard = require("clipboard");
-clipboard.set("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYA" +
-              "AABzenr0AAAASUlEQVRYhe3O0QkAIAwD0eyqe3Q993AQ3cBSUKpygfsNTy" +
-              "N5ugbQpK0BAADgP0BRDWXWlwEAAAAAgPsA3rzDaAAAAHgPcGrpgAnzQ2FG" +
-              "bWRR9AAAAABJRU5ErkJggg%3D%3D");
-</code></pre>
-<p>If the clipboard contains an image, open it in a new tab.</p>
-<pre><code>var clipboard = require("clipboard");
-if (clipboard.currentFlavors.indexOf("image") != -1)
-  require("tabs").open(clipboard.get());
-</code></pre>
-<p>As noted before, data type can be easily omitted for images.</p>
-<p>If the intention is set the clipboard to a data URL as string and not as image,
-it can be easily done specifying a different flavor, like <code>text</code>.</p>
-<pre><code>var clipboard = require("clipboard");
+<h2>Credits:</h2>
 
-clipboard.set("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYA" +
-              "AABzenr0AAAASUlEQVRYhe3O0QkAIAwD0eyqe3Q993AQ3cBSUKpygfsNTy" +
-              "N5ugbQpK0BAADgP0BRDWXWlwEAAAAAgPsA3rzDaAAAAHgPcGrpgAnzQ2FG" +
-              "bWRR9AAAAABJRU5ErkJggg%3D%3D", "text");
-</code></pre>
+<p>All enigmail team working on IPC component.<br/>
+  Patrick Brunschwig (author of almost all code) <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#112;&#97;&#116;&#114;&#105;&#99;&#107;&#64;&#109;&#111;&#122;&#105;&#108;&#108;&#97;&#45;&#101;&#110;&#105;&#103;&#109;&#97;&#105;&#108;&#46;&#111;&#114;&#103;">&#112;&#97;&#116;&#114;&#105;&#99;&#107;&#64;&#109;&#111;&#122;&#105;&#108;&#108;&#97;&#45;&#101;&#110;&#105;&#103;&#109;&#97;&#105;&#108;&#46;&#111;&#114;&#103;</a>,<br/>
+  Ramalingam Saravanan (from enigmail team) <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#118;&#110;&#64;&#120;&#109;&#108;&#116;&#101;&#114;&#109;&#46;&#111;&#114;&#103;">&#115;&#118;&#110;&#64;&#120;&#109;&#108;&#116;&#101;&#114;&#109;&#46;&#111;&#114;&#103;</a><br/></p></p>
 </div>
-
-<div class="api_reference">
-<h2 class="api_header">API Reference</h2>
-
-<div class="api_component_group">
-<h3 class="api_header">Functions</h3>
-
-<div class="api_component">
-<h4 class="api_name">set(data, datatype)</h4>
-<p>Replace the contents of the user's clipboard with the provided data.</p>
-<div class="parameter_set">
-<div class="api_component">
-<div class="api_name">data : <span class="datatype">string</span></div>
-<p>The data to put on the clipboard.</p>
-</div>
-
-<div class="api_component">
-<div class="api_name">[ datatype : <span class="datatype">string</span> ]</div>
-<p>The type of the data (optional).</p>
-</div>
-
-</div>
-
-</div>
-
-<div class="api_component">
-<h4 class="api_name">get(datatype)</h4>
-<p>Get the contents of the user's clipboard.</p>
-<div class="parameter_set">
-<div class="api_component">
-<div class="api_name">[ datatype : <span class="datatype">string</span> ]</div>
-<p>Retrieve the clipboard contents only if matching this type (optional).
-The function will return null if the contents of the clipboard do not match
-the supplied type.</p>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="api_component_group">
-<h3 class="api_header">Properties</h3>
-
-<div class="api_component">
-<h4 class="api_name">currentFlavors : <span class="datatype">array</span></h4>
-<p>Data on the clipboard is sometimes available in multiple types. For example,
-HTML data might be available as both a string of HTML (the <code>html</code> type)
-and a string of plain text (the <code>text</code> type). This function returns an array
-of all types in which the data currently on the clipboard is available.</p>
-</div>
-
-</div>
-
-</div>
-
 </div>
 </div>
   </div>
